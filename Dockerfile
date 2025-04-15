@@ -1,14 +1,20 @@
-# Use Eclipse Temurin base image with JDK 17
-FROM eclipse-temurin:17-jdk
+# Stage 1: Build the application
+FROM maven:3.9.4-eclipse-temurin-17 as builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy the JAR file built by Maven (make sure to run mvn package before pushing)
-COPY target/*.jar app.jar
+COPY pom.xml .
+COPY src ./src
 
-# Expose the port Spring Boot runs on
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run the application
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Start the Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
