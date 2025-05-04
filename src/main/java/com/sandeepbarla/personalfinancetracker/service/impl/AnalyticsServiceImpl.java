@@ -9,11 +9,11 @@ import com.sandeepbarla.personalfinancetracker.repository.projection.CategorySum
 import com.sandeepbarla.personalfinancetracker.repository.projection.MonthlySummaryProjection;
 import com.sandeepbarla.personalfinancetracker.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,19 +46,25 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Get total income & expense grouped by month
     @Override
     public List<MonthlySummaryModel> getMonthlySummary(User user) {
         List<MonthlySummaryProjection> projections =
                 transactionRepository.getMonthlySummaryByUserId(user.getId());
 
         return projections.stream()
-                .map(proj -> new MonthlySummaryModel(
-                        proj.getYear(),
-                        proj.getMonth(),
-                        proj.getTotalIncome(),
-                        proj.getTotalExpense()
-                ))
+                .map(proj -> {
+                    int year = proj.getYear();
+                    int month = proj.getMonth();
+                    String yearMonth = String.format("%04d-%02d", year, month); // ✅ Format as YYYY-MM
+
+                    return new MonthlySummaryModel(
+                            year,
+                            month,
+                            yearMonth,
+                            BigDecimal.valueOf(proj.getTotalIncome()),   // ✅ Convert safely
+                            BigDecimal.valueOf(proj.getTotalExpense())
+                    );
+                })
                 .collect(Collectors.toList());
     }
 }

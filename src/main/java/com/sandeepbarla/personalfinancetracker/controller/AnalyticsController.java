@@ -38,10 +38,12 @@ public class AnalyticsController {
 
         return models.stream()
                 .map(model -> new MonthlySummaryResponse(
+                        model.getYearMonth(),     // ✅ New field
                         model.getYear(),
                         model.getMonth(),
                         model.getTotalIncome(),
-                        model.getTotalExpense()))
+                        model.getTotalExpense()
+                ))
                 .collect(Collectors.toList());
     }
 }

@@ -2,14 +2,15 @@ package com.sandeepbarla.personalfinancetracker.model.analytics;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class MonthlySummaryModel {
     private int year;
     private int month;
-    private double totalIncome;
-    private double totalExpense;
+    private String yearMonth;       // ✅ New field for "YYYY-MM"
+    private BigDecimal totalIncome;
+    private BigDecimal totalExpense;
 }
