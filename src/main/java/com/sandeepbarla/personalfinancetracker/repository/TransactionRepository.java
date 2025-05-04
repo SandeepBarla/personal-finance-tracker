@@ -1,6 +1,7 @@
 package com.sandeepbarla.personalfinancetracker.repository;
 
 import com.sandeepbarla.personalfinancetracker.model.Transaction;
+import com.sandeepbarla.personalfinancetracker.model.enums.TransactionType;
 import com.sandeepbarla.personalfinancetracker.repository.projection.CategorySummaryProjection;
 import com.sandeepbarla.personalfinancetracker.repository.projection.MonthlySummaryProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,12 +16,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
     // ✅ MVP: Fetch all transactions for the logged-in user
     List<Transaction> findAllByUserId(UUID userId);
 
-    // ✅ Analytics: Group by category name and calculate total amount
     @Query("SELECT c.name AS categoryName, SUM(t.amount) AS totalAmount " +
             "FROM Transaction t JOIN t.category c " +
             "WHERE t.user.id = :userId " +
+            "AND (:type IS NULL OR t.type = :type) " +
             "GROUP BY c.name")
-    List<CategorySummaryProjection> getCategorySummaryByUserId(@Param("userId") UUID userId);
+    List<CategorySummaryProjection> getCategorySummaryByUserIdAndOptionalType(
+            @Param("userId") UUID userId,
+            @Param("type") TransactionType type // ✅ Now use enum here
+    );
 
     // ✅ Analytics: Group by year and month and calculate totals using PostgreSQL EXTRACT
     @Query("SELECT EXTRACT(YEAR FROM t.date) AS year, " +

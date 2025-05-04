@@ -7,6 +7,6 @@ import com.sandeepbarla.personalfinancetracker.model.analytics.MonthlySummaryMod
 import java.util.List;
 
 public interface AnalyticsService {
-    List<CategorySummaryModel> getCategorySummary(User user);
+    List<CategorySummaryModel> getCategorySummary(User user, String type);
     List<MonthlySummaryModel> getMonthlySummary(User user);
 }

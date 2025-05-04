@@ -21,8 +21,11 @@ public class AnalyticsController {
     private final AnalyticsService analyticsService;
 
     @GetMapping("/category-summary")
-    public List<CategorySummaryResponse> getCategorySummary(@CurrentUser User user) {
-        List<CategorySummaryModel> models = analyticsService.getCategorySummary(user);
+    public List<CategorySummaryResponse> getCategorySummary(
+            @CurrentUser User user,
+            @RequestParam(required = false) String type
+    ) {
+        List<CategorySummaryModel> models = analyticsService.getCategorySummary(user, type);
 
         return models.stream()
                 .map(model -> new CategorySummaryResponse(model.getCategoryName(), model.getTotalAmount()))
